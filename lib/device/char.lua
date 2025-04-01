@@ -4,26 +4,22 @@
 --
 
 local device = require("device")
+local linux = require("linux")
 local chardev = {}
 
--- No-operation function to use as default for open and release
 local function nop() end
+local s = linux.stat
 
--- Create a new character device with default values for open and release
 function chardev.new(t)
-    -- If t is a string, convert it to a table with name field
     if type(t) == "string" then
         t = {name = t}
     end
-    
-    -- Ensure t is a table
+
     t = t or {}
-    
-    -- Set default values for open and release if not provided
     t.open = t.open or nop
     t.release = t.release or nop
-    
-    -- Call the original device.new function
+    t.mode = t.mode or s.IRUGO
+
     return device.new(t)
 end
 
